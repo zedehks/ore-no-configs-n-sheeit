@@ -1,0 +1,2 @@
+#!/bin/sh
+exec wget -e robots=off -r -nd -nc -I '*/src' -R '*.html' -H -- "$@"

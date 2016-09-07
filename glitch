@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+myself="$(basename "$0")"
+
+if [[ $# -lt 4 ]]; then
+    printf 'Usage: %s [source] [frames] [delay] [resize]\n' "$myself"
+    printf 'Example: %s pic.jpg 50 10 320\n' "$myself"
+    exit 0
+fi
+
+# This method works best with the JPEG format.
+convert "$1" /tmp/ggf.jpg
+
+# Create frame copies.
+for i in $(seq "$2"); do
+    cp "/tmp/ggf.jpg" "/tmp/ggf-${i}.jpg"
+
+    # Poor man's data bending using sed.
+    # Different settings = different glitches.
+    sed -i "s/$((RANDOM%14))/1001/g" "/tmp/ggf-${i}.jpg"
+    printf '\rGlitching frame %s/%s ... ' "$i" "$2"
+done
+
+printf '\nAnimating ... '
+convert \
+    -delay "$3" \
+    -resize "$4" \
+    /tmp/ggf* "${1}_glitched_$(date +%s%3N).gif" \
+    2>/dev/null
+
+printf '\nCleanup ... \n'
+rm /tmp/ggf*

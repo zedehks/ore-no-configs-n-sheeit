@@ -1,0 +1,22 @@
+
+#!/usr/bin/env bash
+# GPLv3+
+
+do_int() {
+    printf '\x1bc'
+    exit 0
+}
+trap do_int SIGINT
+
+do_winch() {
+    lines="$(tput lines)"
+    columns="$(tput cols)"
+}
+trap do_winch SIGWINCH
+
+do_winch
+
+while :; do
+    printf '\x1b[%s;1f\x1b[48;5;%sm%*s' \
+        "$((RANDOM%lines+1))" "$((RANDOM%${1:-8}))" "$columns"
+done
